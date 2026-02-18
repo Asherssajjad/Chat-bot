@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 import {
     Home,
     BarChart2,
@@ -31,6 +32,7 @@ const Sidebar = ({ isAdmin = false }) => {
         { name: 'Dashboard', icon: Home, path: '/user' },
         { name: 'My Leads', icon: User, path: '/user/leads' },
         { name: 'Bot Config', icon: Layout, path: '/user/config' },
+        { name: 'Packages', icon: CreditCard, path: '/user/packages' },
         { name: 'History', icon: MessageCircle, path: '/user/history' },
         { name: 'Reports', icon: BarChart2, path: '/user/reports' },
         { name: 'Settings', icon: Settings, path: '/user/settings' },
@@ -88,7 +90,11 @@ const Sidebar = ({ isAdmin = false }) => {
                         DOCUMENTATION
                     </button>
                 </div>
-                <button className="nav-item" style={{ border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}>
+                <button
+                    className="nav-item"
+                    style={{ border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}
+                    onClick={() => signOut({ callbackUrl: '/login' })}
+                >
                     <div className="icon-box"><LogOut size={18} color="#ff3b3b" /></div>
                     Logout
                 </button>

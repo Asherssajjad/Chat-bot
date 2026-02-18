@@ -10,15 +10,15 @@ import {
     ChevronRight,
     Filter,
     Bot,
-    Zap
+    Zap,
+    MoreVertical,
+    ExternalLink
 } from 'lucide-react';
 
 const mockLogs = [
-    { id: 1, sender: '+971 50 123 4567', lastMessage: 'I want to rent a car for 3 days', time: '2 mins ago', type: 'Flow (Car Booking)', unread: true },
-    { id: 2, sender: '+971 52 987 6543', lastMessage: 'Where is your office located?', time: '15 mins ago', type: 'AI Fallback', unread: false },
-    { id: 3, sender: '+971 55 444 3322', lastMessage: 'Thank you for the information', time: '1 hour ago', type: 'Flow (Car Booking)', unread: false },
-    { id: 4, sender: '+44 7712 345678', lastMessage: 'Can I pay with credit card?', time: '3 hours ago', type: 'AI Fallback', unread: false },
-    { id: 5, sender: '+971 58 111 2233', lastMessage: 'Hello Bareerah', time: '5 hours ago', type: 'Initial Prompt', unread: false },
+    { id: 1, sender: '+971 50 123 4567', lastMessage: '3', time: '2 mins ago', type: 'Flow (Step 2: Purchase)', unread: true, tag: 'HOT' },
+    { id: 2, sender: '+971 52 987 6543', lastMessage: 'details', time: '15 mins ago', type: 'Flow (Step 1: Menu)', unread: false, tag: 'WARM' },
+    { id: 3, sender: '+971 55 444 3322', lastMessage: 'Hi', time: '1 hour ago', type: 'Initial Greeting', unread: false, tag: 'COLD' },
 ];
 
 export default function ChatHistory() {
@@ -29,10 +29,10 @@ export default function ChatHistory() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <div>
                     <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Chat History & Logs</h2>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Real-time monitoring of all WhatsApp interactions.</p>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>Real-time monitoring of all Lead Agent interactions.</p>
                 </div>
                 <div className="glass-card" style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ width: '8px', height: '8px', background: 'var(--accent-cyan)', borderRadius: '50%' }}></span>
+                    <span style={{ width: '8px', height: '8px', background: 'var(--accent-cyan)', borderRadius: '50%', animation: 'pulse 2s infinite' }}></span>
                     BOT STATUS: <span style={{ fontWeight: 800, color: 'var(--accent-cyan)' }}>ACTIVE</span>
                 </div>
             </div>
@@ -72,8 +72,16 @@ export default function ChatHistory() {
                                 <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                                     {log.lastMessage}
                                 </div>
-                                <div style={{ marginTop: '8px', fontSize: '0.65rem', fontWeight: 800, color: log.type.includes('AI') ? 'var(--accent-purple)' : 'var(--accent-cyan)' }}>
-                                    {log.type.toUpperCase()}
+                                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                    <span style={{ fontSize: '0.6rem', fontWeight: 800, padding: '2px 6px', borderRadius: '4px', background: 'rgba(255,255,255,0.05)' }}>{log.type.toUpperCase()}</span>
+                                    <span style={{
+                                        fontSize: '0.6rem',
+                                        fontWeight: 800,
+                                        padding: '2px 6px',
+                                        borderRadius: '4px',
+                                        background: log.tag === 'HOT' ? 'rgba(255, 59, 59, 0.1)' : 'rgba(1, 255, 140, 0.1)',
+                                        color: log.tag === 'HOT' ? '#ff3b3b' : 'var(--accent-cyan)'
+                                    }}>{log.tag}</span>
                                 </div>
                             </div>
                         ))}
@@ -100,46 +108,56 @@ export default function ChatHistory() {
                     </div>
 
                     {/* Messages Area */}
-                    <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ flex: 1, padding: '24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
-                        <div style={{ alignSelf: 'center', padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                        <div style={{ alignSelf: 'center', padding: '6px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '100px', fontSize: '0.7rem', color: 'var(--text-secondary)' }}>
                             Today, February 18
                         </div>
 
-                        <div style={{ alignSelf: 'flex-start', maxWidth: '70%' }}>
-                            <div style={{ background: 'var(--accent-blue)', color: 'white', padding: '12px 16px', borderRadius: '16px 16px 16px 2px', fontSize: '0.85rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                                Hello! Welcome to Bareerah Car Rentals. Would you like to Book a Car or Check Availability?
+                        {/* USER START */}
+                        <div style={{ alignSelf: 'flex-end', maxWidth: '75%' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '10px 14px', borderRadius: '14px 14px 2px 14px', fontSize: '0.85rem', border: '1px solid var(--border-glass)' }}>
+                                Hi, I need help with your services.
                             </div>
-                            <div style={{ marginTop: '4px', fontSize: '0.65rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Bot size={10} /> SENT BY BOT • 2:00 PM
+                            <div style={{ marginTop: '4px', fontSize: '0.6rem', color: 'var(--text-secondary)', textAlign: 'right' }}>USER • 2:00 PM</div>
+                        </div>
+
+                        {/* BOT MENU (STEP 1) */}
+                        <div style={{ alignSelf: 'flex-start', maxWidth: '75%' }}>
+                            <div style={{ background: 'var(--accent-blue)', color: 'white', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', fontSize: '0.85rem', whiteSpace: 'pre-line', lineHeight: '1.5' }}>
+                                Hi 👋 Thanks for contacting us.{"\n\n"}How can I help you today?{"\n"}Reply with a number:{"\n\n"}1️⃣ Get service details{"\n"}2️⃣ See our social media work{"\n"}3️⃣ Purchase a service{"\n"}4️⃣ Talk to our team{"\n"}5️⃣ Other query
+                            </div>
+                            <div style={{ marginTop: '4px', fontSize: '0.6rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Bot size={10} /> BOT (STEP 1: MENU) • 2:00 PM
                             </div>
                         </div>
 
-                        <div style={{ alignSelf: 'flex-end', maxWidth: '70%' }}>
-                            <div style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '12px 16px', borderRadius: '16px 16px 2px 16px', fontSize: '0.85rem', border: '1px solid var(--border-glass)' }}>
-                                I want to rent a car for 3 days
+                        {/* USER SELECTS OPTION 3 */}
+                        <div style={{ alignSelf: 'flex-end', maxWidth: '75%' }}>
+                            <div style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '10px 14px', borderRadius: '14px 14px 2px 14px', fontSize: '0.85rem', border: '1px solid var(--border-glass)' }}>
+                                3
                             </div>
-                            <div style={{ marginTop: '4px', fontSize: '0.65rem', color: 'var(--text-secondary)', textAlign: 'right' }}>
-                                USER • 2:01 PM
+                            <div style={{ marginTop: '4px', fontSize: '0.6rem', color: 'var(--text-secondary)', textAlign: 'right' }}>USER • 2:02 PM</div>
+                        </div>
+
+                        {/* BOT OPTION HANDLING (STEP 2) */}
+                        <div style={{ alignSelf: 'flex-start', maxWidth: '75%' }}>
+                            <div style={{ background: 'var(--accent-blue)', color: 'white', padding: '10px 14px', borderRadius: '14px 14px 14px 2px', fontSize: '0.85rem', whiteSpace: 'pre-line' }}>
+                                Great 👍 Please share:{"\n"}• Service name{"\n"}• Budget range
+                            </div>
+                            <div style={{ marginTop: '4px', fontSize: '0.6rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Bot size={10} /> BOT (STEP 2: OPTION 3) • 2:02 PM
                             </div>
                         </div>
 
-                        <div style={{ alignSelf: 'flex-start', maxWidth: '70%' }}>
-                            <div style={{ background: 'var(--accent-blue)', color: 'white', padding: '12px 16px', borderRadius: '16px 16px 16px 2px', fontSize: '0.85rem' }}>
-                                Awesome! We have Sedans, SUVs, and Luxury cars available. Which one do you prefer?
-                            </div>
-                            <div style={{ marginTop: '4px', fontSize: '0.65rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                <Bot size={10} /> SENT BY BOT (HARDCODED FLOW) • 2:01 PM
-                            </div>
-                        </div>
-
-                        <div style={{ alignSelf: 'center', padding: '8px 16px', background: 'rgba(1, 255, 140, 0.05)', border: '1px solid rgba(1, 255, 140, 0.1)', borderRadius: '12px', fontSize: '0.7rem', color: 'var(--accent-cyan)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Zap size={12} /> BOT SUCCESS: LEAD DATA EXTRACTED (DAYS: 3)
+                        {/* TAG NOTIFICATION */}
+                        <div style={{ alignSelf: 'center', padding: '8px 16px', background: 'rgba(255, 59, 59, 0.05)', border: '1px solid rgba(255, 59, 59, 0.1)', borderRadius: '12px', fontSize: '0.7rem', color: '#ff3b3b', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Zap size={12} /> SYSTEM: LEAD MARKED AS **HOT** (PURCHASE INTENT)
                         </div>
 
                     </div>
 
-                    {/* Message Input (For takeover) */}
+                    {/* Message Input */}
                     <div style={{ padding: '20px 24px', borderTop: '1px solid var(--border-glass)' }}>
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <div className="search-box" style={{ flex: 1, padding: '12px 16px' }}>
