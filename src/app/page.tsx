@@ -33,20 +33,30 @@ export default function LandingPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '100px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-glass)', fontSize: '0.75rem', fontWeight: 700, marginBottom: '32px' }}>
             <span style={{ color: 'var(--accent-cyan)' }}>NEW</span> Version 2.0 is now live
           </div>
-          <h1 style={{ fontSize: '5rem', marginBottom: '24px', lineHeight: '1', fontWeight: 800, background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.7) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            The Premium <span style={{ color: 'var(--accent-blue)' }}>WhatsApp SaaS</span> for Automation
+          <h1 style={{ fontSize: '5.5rem', marginBottom: '24px', lineHeight: '0.95', fontWeight: 800, background: 'linear-gradient(to bottom, #fff 0%, rgba(255,255,255,0.6) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-2px' }}>
+            Zero-Cost <span style={{ color: 'var(--accent-blue)' }}>WhatsApp</span> Automation
           </h1>
-          <p style={{ fontSize: '1.25rem', color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '600px', marginInline: 'auto', lineHeight: '1.6' }}>
-            Scale your business with intelligent hybrid flows. Hardcoded responses for efficiency, AI fallback for complexity.
+          <p style={{ fontSize: '1.4rem', color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '700px', marginInline: 'auto', lineHeight: '1.5' }}>
+            The world's first hybrid flow engine. Hardcoded precision for 90% of queries, Claude AI for the rest. **Save thousands on API costs.**
           </p>
 
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-            <Link href="/user" className="btn btn-primary" style={{ padding: '16px 32px', fontSize: '1rem' }}>
-              Create Your Bot <ArrowRight size={18} />
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '20px' }}>
+            <Link href="/user" className="btn btn-primary" style={{ padding: '18px 40px', fontSize: '1.1rem', borderRadius: '14px' }}>
+              Launch Your Bot <ArrowRight size={20} />
             </Link>
-            <button className="btn btn-secondary" style={{ padding: '16px 32px', fontSize: '1rem', background: 'transparent', border: '1px solid var(--border-glass)' }}>
-              View Demo
+            <button className="btn btn-secondary" style={{ padding: '18px 40px', fontSize: '1.1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-glass)', borderRadius: '14px' }}>
+              Watch Demo
             </button>
+          </div>
+
+          <div style={{ marginTop: '60px', opacity: 0.5 }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>POWERING AUTOMATION FOR</p>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', grayscale: '100%' }}>
+              <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>BAREERAH</span>
+              <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>RENTALS</span>
+              <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>ESTATE+</span>
+              <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>MODERN</span>
+            </div>
           </div>
         </div>
 

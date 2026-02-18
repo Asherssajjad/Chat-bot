@@ -11,13 +11,13 @@ export default function UserLayout({
             <main className="main-content">
                 <div className="header-nav">
                     <div className="breadcrumb">
-                        User Portal / <span>Overview</span>
+                        Client Portal / <span>Active Bot Overview</span>
                     </div>
                     <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                         <div className="search-box">
-                            <input type="text" placeholder="Search Leads..." />
+                            <input type="text" placeholder="Quick Search Leads..." />
                         </div>
-                        <button className="btn btn-primary" style={{ height: '35px', fontSize: '0.7rem' }}>CONNECT WHATSAPP</button>
+                        <button className="btn btn-primary" style={{ height: '35px', fontSize: '0.7rem' }}>WHATSAPP CONNECT</button>
                     </div>
                 </div>
                 {children}
