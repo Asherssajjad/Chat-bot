@@ -5,7 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
-import { Download, Calendar, Filter, TrendingUp, Users, MessageSquare, Zap } from 'lucide-react';
+import { Download, Calendar, Filter, TrendingUp, Users, MessageSquare, Zap, Clock } from 'lucide-react';
 
 const conversionData = [
     { name: 'Mon', leads: 40, converted: 24 },

@@ -12,149 +12,184 @@ import {
     AreaChart,
     Area
 } from 'recharts';
-import { CreditCard, Globe, Wallet, ShoppingCart, MoreVertical } from 'lucide-react';
+import {
+    MessageSquare,
+    Globe,
+    Zap,
+    Users,
+    MoreVertical,
+    Activity,
+    Cpu,
+    ShieldAlert,
+    Server,
+    Terminal,
+    ArrowUpRight
+} from 'lucide-react';
 
-const areaData = [
-    { name: 'Jan', value: 400 }, { name: 'Feb', value: 300 }, { name: 'Mar', value: 500 },
-    { name: 'Apr', value: 280 }, { name: 'May', value: 590 }, { name: 'Jun', value: 320 },
-    { name: 'Jul', value: 480 }, { name: 'Aug', value: 510 }, { name: 'Sep', value: 390 },
-    { name: 'Oct', value: 430 }, { name: 'Nov', value: 540 }, { name: 'Dec', value: 600 },
+const messageVolumeData = [
+    { name: '00:00', val: 400 }, { name: '04:00', val: 300 }, { name: '08:00', val: 900 },
+    { name: '12:00', val: 1200 }, { name: '16:00', val: 1500 }, { name: '20:00', val: 1100 },
+    { name: '23:59', val: 800 },
 ];
 
-const barData = [
-    { name: 'A', v: 400 }, { name: 'B', v: 300 }, { name: 'C', v: 500 },
-    { name: 'D', v: 280 }, { name: 'E', v: 590 }, { name: 'F', v: 320 },
-    { name: 'G', v: 480 },
+const resourceData = [
+    { name: 'Core 1', v: 45 }, { name: 'Core 2', v: 38 }, { name: 'Core 3', v: 52 },
+    { name: 'Core 4', v: 30 }, { name: 'Core 5', v: 48 }, { name: 'Core 6', v: 35 },
 ];
 
 const AdminDashboard = () => {
     return (
-        <div>
-            {/* Stat Cards */}
-            <div className="grid-container">
+        <div className="animate-in">
+            {/* Real-time System Overview Stat Cards */}
+            <div className="grid-container" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                 {[
-                    { label: "Today's Money", value: "$53,000", trend: "+55%", icon: Wallet },
-                    { label: "Today's Users", value: "2,300", trend: "+5%", icon: Globe },
-                    { label: "New Clients", value: "+3,052", trend: "-14%", icon: CreditCard, down: true },
-                    { label: "Total Sales", value: "$173,000", trend: "+8%", icon: ShoppingCart },
+                    { label: "Global Messages", value: "842,000", trend: "+12.5%", icon: MessageSquare, color: 'var(--accent-blue)' },
+                    { label: "AI API Savings", value: "$4,250", trend: "+24%", icon: Zap, color: 'var(--accent-cyan)' },
+                    { label: "Active Bots", value: "1,284", trend: "+8.2%", icon: Cpu, color: 'var(--accent-purple)' },
+                    { label: "Total Leads", value: "48,290", trend: "+15%", icon: Users, color: '#f59e0b' },
                 ].map((stat, i) => (
-                    <div key={i} className="card stat-card">
+                    <div key={i} className="card stat-card" style={{ padding: '20px' }}>
                         <div className="stat-info">
                             <div className="label">{stat.label}</div>
                             <div className="value">
                                 {stat.value}
-                                <span className={`trend ${stat.down ? 'trend-down' : 'trend-up'}`}>{stat.trend}</span>
+                                <span className="trend trend-up" style={{ fontSize: '0.65rem' }}>{stat.trend}</span>
                             </div>
                         </div>
-                        <div className="stat-icon">
-                            <stat.icon size={20} color="white" />
+                        <div className="stat-icon" style={{ background: stat.color, width: '40px', height: '40px' }}>
+                            <stat.icon size={18} color="white" />
                         </div>
                     </div>
                 ))}
             </div>
 
-            {/* Hero & Charts Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr 1fr', gap: '24px', marginBottom: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: '16px', marginBottom: '16px' }}>
 
-                {/* Hero Card */}
-                <div className="card hero-card" style={{ padding: '32px' }}>
-                    <div className="hero-content">
-                        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '8px' }}>Welcome back,</div>
-                        <h2 style={{ fontSize: '2rem', marginBottom: '12px' }}>Mark Johnson</h2>
-                        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', width: '200px', lineHeight: '1.6' }}>
-                            Glad to see you again! Ask me anything.
+                {/* Main Master Control Hero */}
+                <div className="card" style={{
+                    background: 'linear-gradient(135deg, rgba(6, 11, 40, 0.94) 0%, rgba(20, 30, 80, 0.8) 100%)',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '300px',
+                    padding: '32px'
+                }}>
+                    <div style={{ position: 'absolute', top: '-10%', right: '-5%', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(0, 117, 255, 0.2) 0%, transparent 70%)', filter: 'blur(40px)', pointerEvents: 'none' }}></div>
+
+                    <div style={{ zIndex: 1 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                            <div style={{ width: '8px', height: '8px', background: 'var(--accent-cyan)', borderRadius: '50%', boxShadow: '0 0 10px var(--accent-cyan)' }}></div>
+                            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: 'var(--accent-cyan)', letterSpacing: '1px' }}>SYSTEM LIVE • ASHER BOT NODE 01</span>
+                        </div>
+                        <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '12px' }}>Platform Infrastructure</h2>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '400px', lineHeight: '1.6' }}>
+                            All clusters are healthy. You are currently saving **92%** on Claude API costs through optimized hardcoded flows.
                         </p>
-                        <div style={{ marginTop: '40px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer' }}>
-                            Tap to record <Globe size={16} />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '24px', zIndex: 1, marginTop: '40px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="icon-box" style={{ background: 'rgba(255,255,255,0.05)' }}><Server size={18} color="var(--accent-blue)" /></div>
+                            <div>
+                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>CPU USAGE</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>24.2%</div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="icon-box" style={{ background: 'rgba(255,255,255,0.05)' }}><Activity size={18} color="var(--accent-cyan)" /></div>
+                            <div>
+                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>UPTIME</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>99.99%</div>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div className="icon-box" style={{ background: 'rgba(255,255,255,0.05)' }}><ShieldAlert size={18} color="#f59e0b" /></div>
+                            <div>
+                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>INCIDENTS</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>0 Active</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Satisfaction Rate */}
-                <div className="card">
-                    <h4 style={{ marginBottom: '4px' }}>Satisfaction Rate</h4>
-                    <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem', marginBottom: '24px' }}>From all projects</div>
-                    <div className="progress-container">
-                        <div style={{ fontSize: '2.5rem', fontWeight: 800 }}>95%</div>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '0.75rem' }}>Based on likes</div>
+                {/* Quick Actions & Live Stream */}
+                <div className="card" style={{ display: 'flex', flexDirection: 'column', padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                        <h4 style={{ fontSize: '0.9rem' }}>Live Event Stream</h4>
+                        <Terminal size={14} color="var(--text-secondary)" />
                     </div>
-                </div>
-
-                {/* Referral Tracking */}
-                <div className="card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                        <h4>Referral Tracking</h4>
-                        <MoreVertical size={16} color="var(--text-secondary)" />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                        <div className="glass-card" style={{ padding: '16px', borderRadius: '12px' }}>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Invited</div>
-                            <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>145 people</div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem', fontFamily: 'monospace' }}>
+                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-cyan)', background: 'rgba(1, 255, 140, 0.05)' }}>
+                            <span style={{ color: 'var(--accent-cyan)' }}>[14:02:11]</span> Lead detected: Bareerah Rentals
                         </div>
-                        <div className="glass-card" style={{ padding: '16px', borderRadius: '12px' }}>
-                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>Bonus</div>
-                            <div style={{ fontSize: '1.1rem', fontWeight: 800 }}>1,465</div>
+                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-blue)', background: 'rgba(0, 117, 255, 0.05)' }}>
+                            <span style={{ color: 'var(--accent-blue)' }}>[14:02:05]</span> Webhook processed: +971...
+                        </div>
+                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-purple)', background: 'rgba(139, 92, 246, 0.05)' }}>
+                            <span style={{ color: 'var(--accent-purple)' }}>[14:01:48]</span> AI Fallback engaged for UID_092
+                        </div>
+                        <div style={{ padding: '8px', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
+                            <span style={{ color: 'var(--text-secondary)' }}>[14:01:30]</span> New user registered (Dubai Stay)
                         </div>
                     </div>
+                    <button className="btn btn-primary" style={{ width: '100%', marginTop: '20px', fontSize: '0.75rem' }}>OPEN FULL LOGS</button>
                 </div>
             </div>
 
-            {/* Large Charts Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1.8fr 1.2fr', gap: '24px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px' }}>
 
-                {/* Sales Overview */}
-                <div className="card">
-                    <h4 style={{ marginBottom: '4px' }}>Sales overview</h4>
-                    <div style={{ fontSize: '0.75rem', marginBottom: '24px' }}>
-                        <span style={{ color: 'var(--accent-cyan)' }}>(+5) more</span> in 2024
+                {/* Global Traffic Chart */}
+                <div className="card" style={{ padding: '24px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                        <div>
+                            <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Global Message Volume</h4>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Real-time traffic across all connected WhatsApp nodes</p>
+                        </div>
+                        <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.65rem' }}>VIEW NODES <ArrowUpRight size={12} /></button>
                     </div>
                     <div style={{ height: '300px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={areaData}>
+                            <AreaChart data={messageVolumeData}>
                                 <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                    <linearGradient id="colorMsg" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="var(--accent-blue)" stopOpacity={0.3} />
                                         <stop offset="95%" stopColor="var(--accent-blue)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
-                                <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="rgba(255,255,255,0.3)" fontSize={12} tickLine={false} axisLine={false} />
-                                <Tooltip contentStyle={{ background: '#1a1f37', border: 'none', borderRadius: '8px' }} />
-                                <Area type="monotone" dataKey="value" stroke="var(--accent-blue)" strokeWidth={3} fillOpacity={1} fill="url(#colorValue)" />
+                                <XAxis dataKey="name" stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} />
+                                <YAxis stroke="rgba(255,255,255,0.3)" fontSize={10} tickLine={false} axisLine={false} />
+                                <Tooltip contentStyle={{ background: '#1a1f37', border: 'none', borderRadius: '8px', fontSize: '12px' }} />
+                                <Area type="monotone" dataKey="val" stroke="var(--accent-blue)" strokeWidth={3} fillOpacity={1} fill="url(#colorMsg)" />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </div>
 
-                {/* Active Users Bar Chart */}
-                <div className="card" style={{ background: 'var(--accent-gradient)' }}>
-                    <div style={{ height: '200px', marginBottom: '24px' }}>
+                {/* Load Balance / Cluster Health */}
+                <div className="card" style={{ padding: '24px' }}>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Cluster Node Distribution</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>CPU Load balancing per active bot-processing core</p>
+
+                    <div style={{ height: '220px', marginBottom: '24px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={barData}>
-                                <Bar dataKey="v" fill="white" radius={[4, 4, 0, 0]} barSize={8} />
+                            <BarChart data={resourceData}>
+                                <Bar dataKey="v" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]} barSize={12} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
-                    <h4 style={{ marginBottom: '8px' }}>Active Users</h4>
-                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        <span style={{ color: 'var(--accent-cyan)' }}>(+23)</span> than last week
-                    </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
-                        {[
-                            { label: 'Users', val: '32,984' },
-                            { label: 'Clicks', val: '2.42m' },
-                            { label: 'Sales', val: '2,400$' },
-                            { label: 'Items', val: '320' },
-                        ].map((item, idx) => (
-                            <div key={idx}>
-                                <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>{item.label}</div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{item.val}</div>
-                                <div style={{ width: '100%', height: '3px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', marginTop: '8px' }}>
-                                    <div style={{ width: '60%', height: '100%', background: 'white', borderRadius: '2px' }}></div>
-                                </div>
-                            </div>
-                        ))}
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                        <div className="glass-card" style={{ padding: '12px', borderRadius: '12px' }}>
+                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>API LATENCY</div>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>184ms</div>
+                        </div>
+                        <div className="glass-card" style={{ padding: '12px', borderRadius: '12px' }}>
+                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>QUEUE SIZE</div>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>12 Active</div>
+                        </div>
                     </div>
                 </div>
 

@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
 
+@keyframes pulse {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 :root {
   --bg-main: #060b26;
   --bg-sidebar: linear-gradient(135deg, rgba(6, 11, 38, 0.94) 0%, rgba(26, 31, 55, 0.94) 100%);
@@ -173,8 +190,8 @@ h3 {
 .grid-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
 /* Cards */
@@ -184,11 +201,19 @@ h3 {
   border-radius: 20px;
   border: 1px solid var(--border-glass);
   padding: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  border-borderColor: rgba(0, 117, 255, 0.3);
+  box-shadow: 0 12px 40px -15px rgba(0, 0, 0, 0.4);
 }
 
 .glass-card {
-  background: rgba(6, 11, 40, 0.5);
-  border: 1px solid rgba(226, 232, 240, 0.1);
+  background: rgba(15, 21, 53, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 /* Stat Cards */

@@ -47,6 +47,24 @@ const Sidebar = ({ isAdmin = false }) => {
                 <span>ASHER BOT</span>
             </div>
 
+            <div style={{ padding: '0 16px', marginBottom: '24px' }}>
+                <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: '100px',
+                    background: 'rgba(1, 255, 140, 0.05)',
+                    border: '1px solid rgba(1, 255, 140, 0.1)',
+                    fontSize: '0.6rem',
+                    fontWeight: 800,
+                    color: 'var(--accent-cyan)'
+                }}>
+                    <div style={{ width: '6px', height: '6px', background: 'var(--accent-cyan)', borderRadius: '50%', animation: 'pulse 2s infinite' }}></div>
+                    SYSTEM OPERATIONAL
+                </div>
+            </div>
+
             <nav style={{ flex: 1 }}>
                 {menuItems.map((item) => (
                     <Link
