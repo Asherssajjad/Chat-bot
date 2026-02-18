@@ -1,0 +1,82 @@
+'use client';
+
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+    Home,
+    BarChart2,
+    CreditCard,
+    Settings,
+    User,
+    LogOut,
+    Zap,
+    Layout,
+    MessageCircle
+} from 'lucide-react';
+
+const Sidebar = ({ isAdmin = false }) => {
+    const pathname = usePathname();
+
+    const adminMenu = [
+        { name: 'Dashboard', icon: Home, path: '/admin' },
+        { name: 'Users', icon: User, path: '/admin/users' },
+        { name: 'Packages', icon: CreditCard, path: '/admin/packages' },
+        { name: 'Niche Flows', icon: Zap, path: '/admin/flows' },
+        { name: 'Analytics', icon: BarChart2, path: '/admin/analytics' },
+        { name: 'Settings', icon: Settings, path: '/admin/settings' },
+    ];
+
+    const userMenu = [
+        { name: 'Dashboard', icon: Home, path: '/user' },
+        { name: 'My Leads', icon: User, path: '/user/leads' },
+        { name: 'Bot Config', icon: Layout, path: '/user/config' },
+        { name: 'History', icon: MessageCircle, path: '/user/history' },
+        { name: 'Reports', icon: BarChart2, path: '/user/reports' },
+        { name: 'Settings', icon: Settings, path: '/user/settings' },
+    ];
+
+    const menuItems = isAdmin ? adminMenu : userMenu;
+
+    return (
+        <div className="sidebar">
+            <div className="sidebar-logo">
+                <div className="icon-box" style={{ background: 'var(--accent-blue)' }}>
+                    <Zap size={18} color="white" fill="white" />
+                </div>
+                <span>ASHER BOT</span>
+            </div>
+
+            <nav style={{ flex: 1 }}>
+                {menuItems.map((item) => (
+                    <Link
+                        key={item.name}
+                        href={item.path}
+                        className={`nav-item ${pathname === item.path ? 'active' : ''}`}
+                    >
+                        <div className="icon-box">
+                            <item.icon size={18} color={pathname === item.path ? 'white' : 'var(--accent-blue)'} />
+                        </div>
+                        {item.name}
+                    </Link>
+                ))}
+            </nav>
+
+            <div style={{ marginTop: 'auto' }}>
+                <div className="card glass-card" style={{ padding: '16px', marginBottom: '16px' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 800, marginBottom: '8px' }}>Need help?</div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>Please check our docs</div>
+                    <button className="nav-item active" style={{ width: '100%', justifyContent: 'center', marginBottom: 0, border: 'none', cursor: 'pointer' }}>
+                        DOCUMENTATION
+                    </button>
+                </div>
+                <button className="nav-item" style={{ border: 'none', background: 'none', width: '100%', cursor: 'pointer' }}>
+                    <div className="icon-box"><LogOut size={18} color="#ff3b3b" /></div>
+                    Logout
+                </button>
+            </div>
+        </div>
+    );
+};
+
+export default Sidebar;

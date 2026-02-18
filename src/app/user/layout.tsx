@@ -1,0 +1,27 @@
+import Sidebar from '@/components/Sidebar';
+
+export default function UserLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="dashboard-container">
+            <Sidebar isAdmin={false} />
+            <main className="main-content">
+                <div className="header-nav">
+                    <div className="breadcrumb">
+                        User Portal / <span>Overview</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                        <div className="search-box">
+                            <input type="text" placeholder="Search Leads..." />
+                        </div>
+                        <button className="btn btn-primary" style={{ height: '35px', fontSize: '0.7rem' }}>CONNECT WHATSAPP</button>
+                    </div>
+                </div>
+                {children}
+            </main>
+        </div>
+    );
+}

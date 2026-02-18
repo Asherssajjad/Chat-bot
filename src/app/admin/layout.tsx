@@ -1,0 +1,27 @@
+import Sidebar from '@/components/Sidebar';
+
+export default function AdminLayout({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="dashboard-container">
+            <Sidebar isAdmin={true} />
+            <main className="main-content">
+                <div className="header-nav">
+                    <div className="breadcrumb">
+                        Pages / <span>Dashboard</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+                        <div className="search-box">
+                            <input type="text" placeholder="Type here..." />
+                        </div>
+                        <button className="btn btn-primary" style={{ height: '35px', fontSize: '0.7rem' }}>NEW PROJECT</button>
+                    </div>
+                </div>
+                {children}
+            </main>
+        </div>
+    );
+}
