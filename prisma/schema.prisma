@@ -27,9 +27,16 @@ model User {
   role          Role      @default(USER)
   image         String?
   
+  // WhatsApp Business Config (Admin Managed)
+  phoneId       String?
+  wabaId        String?
+  accessToken   String?
+  webhookSecret String?
+  messageLimit  Int       @default(1000)
+  autoPause     Boolean   @default(false)
+  
   // Bot Configs
   niche         String    @default("LEAD_REPLY_AGENT")
-  whatsappToken String?
   claudeKey     String?
   whatsappPhone String?
 
