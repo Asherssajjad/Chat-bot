@@ -51,7 +51,7 @@ export default function LandingPage() {
 
           <div style={{ marginTop: '60px', opacity: 0.5 }}>
             <p style={{ fontSize: '0.75rem', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '20px' }}>POWERING AUTOMATION FOR</p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', grayscale: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', filter: 'grayscale(100%)' }}>
               <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>BAREERAH</span>
               <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>RENTALS</span>
               <span style={{ fontWeight: 900, fontSize: '1.2rem' }}>ESTATE+</span>

@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
     try {
         const leads = await prisma.lead.findMany({
             where: {
-                userId: session.user.email ? { user: { email: session.user.email } } : undefined
+                user: session.user.email ? { email: session.user.email } : undefined
             },
             orderBy: {
                 updatedAt: 'desc'

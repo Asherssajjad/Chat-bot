@@ -174,8 +174,8 @@ export default function ScrapePlayground() {
                                         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
                                             {result.images.map((img: any, i: number) => (
                                                 <div key={i} className="glass-card" style={{ borderRadius: '12px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-                                                    <div style={{ height: '150px', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justify-content: 'center' }}>
-                                                        <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e: any) => e.target.style.display = 'none'} />
+                                                    <div style={{ height: '150px', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <img src={img.src} alt={img.alt} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e: any) => e.currentTarget.style.display = 'none'} />
                                                     </div>
                                                     <div style={{ padding: '12px', fontSize: '0.75rem', color: 'var(--text-secondary)', background: 'rgba(0,0,0,0.2)' }}>
                                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
@@ -185,18 +185,17 @@ export default function ScrapePlayground() {
                                                         <div style={{ wordBreak: 'break-all', opacity: 0.6 }}>{img.src.split('/').pop()}</div>
                                                     </div>
                                                 </div>
-                                    ))}
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             )}
+
                         </div>
-                            )}
-
                     </div>
-                </div>
 
                 </div>
-    )
-}
-        </div >
+            )}
+        </div>
     );
 }

@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
                 if (response.ok) {
                     const html = await response.text();
                     // Simple extraction: remove tags and excess whitespace
-                    websiteContent = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gmid, "")
-                        .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gmid, "")
+                    websiteContent = html.replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gmi, "")
+                        .replace(/<style\b[^>]*>([\s\S]*?)<\/style>/gmi, "")
                         .replace(/<[^>]*>?/gm, ' ')
                         .replace(/\s+/g, ' ')
                         .trim()
