@@ -1,6 +1,6 @@
 datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 generator client {
@@ -39,6 +39,11 @@ model User {
   niche         String    @default("LEAD_REPLY_AGENT")
   claudeKey     String?
   whatsappPhone String?
+  systemPrompt  String?   @default("You are a helpful assistant.")
+  customFlow    String?   // JSON string of custom flow steps
+  websiteUrl    String?   // New: Website to scrape for knowledge base
+  websiteContent String?  // Cached text content from the website
+
 
   // Relationships
   leads         Lead[]
@@ -66,7 +71,7 @@ model Lead {
 model ChatLog {
   id        String   @id @default(cuid())
   sender    String   // 'BOT' or 'USER'
-  message   String   @db.Text
+  message   String
   type      String   // 'FLOW' or 'AI'
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id])

@@ -1,6 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getResponseForMessage } from '@/lib/niche-flows';
 
+// WhatsApp Webhook Verification
+export async function GET(req: NextRequest) {
+    const searchParams = req.nextUrl.searchParams;
+    const mode = searchParams.get("hub.mode");
+    const token = searchParams.get("hub.verify_token");
+    const challenge = searchParams.get("hub.challenge");
+
+    // Check if a token and mode were sent
+    if (mode && token) {
+        // Check the mode and token sent are correct
+        if (mode === "subscribe" && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+            console.log("WEBHOOK_VERIFIED");
+            // Respond with 200 OK and challenge token from the request
+            return new NextResponse(challenge, { status: 200 });
+        } else {
+            // Responds with '403 Forbidden' if verify tokens do not match
+            return new NextResponse('Forbidden', { status: 403 });
+        }
+    }
+    return new NextResponse('Bad Request', { status: 400 });
+}
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

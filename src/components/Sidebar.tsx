@@ -13,7 +13,10 @@ import {
     LogOut,
     Zap,
     Layout,
-    MessageCircle
+    MessageCircle,
+    Terminal,
+    Database,
+    Phone
 } from 'lucide-react';
 
 const Sidebar = ({ isAdmin = false }) => {
@@ -25,6 +28,9 @@ const Sidebar = ({ isAdmin = false }) => {
         { name: 'Packages', icon: CreditCard, path: '/admin/packages' },
         { name: 'Niche Flows', icon: Zap, path: '/admin/flows' },
         { name: 'Analytics', icon: BarChart2, path: '/admin/analytics' },
+        { name: 'Bot Simulator', icon: Terminal, path: '/admin/simulator' },
+        { name: 'Scrape Test', icon: Database, path: '/scrape-test' },
+        { name: 'WhatsApp API Test', icon: Phone, path: '/whatsapp-test' },
         { name: 'Settings', icon: Settings, path: '/admin/settings' },
     ];
 
@@ -35,8 +41,11 @@ const Sidebar = ({ isAdmin = false }) => {
         { name: 'Packages', icon: CreditCard, path: '/user/packages' },
         { name: 'History', icon: MessageCircle, path: '/user/history' },
         { name: 'Reports', icon: BarChart2, path: '/user/reports' },
+        { name: 'Scrape Test', icon: Database, path: '/scrape-test' },
+        { name: 'WhatsApp API Test', icon: Phone, path: '/whatsapp-test' },
         { name: 'Settings', icon: Settings, path: '/user/settings' },
     ];
+
 
     const menuItems = isAdmin ? adminMenu : userMenu;
 

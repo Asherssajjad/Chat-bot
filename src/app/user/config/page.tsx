@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import useSWR from 'swr';
 import {
     MessageSquare,
     Bot,
@@ -19,23 +20,73 @@ import {
 } from 'lucide-react';
 import { NICHE_FLOWS } from '@/lib/niche-flows';
 
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 export default function BotConfig() {
-    const [selectedNiche, setSelectedNiche] = useState('CAR_BOOKING');
+    const { data, error, mutate } = useSWR('/api/config', fetcher);
+    const [selectedNiche, setSelectedNiche] = useState('LEAD_REPLY_AGENT');
+    const [systemPrompt, setSystemPrompt] = useState('You are a helpful assistant.');
+    const [websiteUrl, setWebsiteUrl] = useState('');
     const [isSaving, setIsSaving] = useState(false);
+
+    // Fallback flow if none saved
     const [customFlow, setCustomFlow] = useState([
         { id: 1, type: 'Greeting', text: 'Salam! Hope you are doing well.', trigger: 'Initial' },
         { id: 2, type: 'Offer', text: 'How can I help you today? I can share prices, details, or book now.', trigger: 'After Salam' },
-        { id: 3, type: 'Process', text: 'Sure! Our prices start from $50/day. Which car do you like?', trigger: 'Price' },
     ]);
 
-    const handleSave = () => {
+    // Sync state with SWR data when it loads
+    useEffect(() => {
+        if (data) {
+            if (data.niche) setSelectedNiche(data.niche);
+            if (data.systemPrompt) setSystemPrompt(data.systemPrompt);
+            if (data.websiteUrl) setWebsiteUrl(data.websiteUrl);
+            if (data.customFlow && data.customFlow.length > 0) setCustomFlow(data.customFlow);
+        }
+    }, [data]);
+
+    const handleSave = async () => {
         setIsSaving(true);
-        setTimeout(() => setIsSaving(false), 2000);
+        try {
+            const res = await fetch('/api/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    niche: selectedNiche,
+                    systemPrompt,
+                    websiteUrl,
+                    customFlow
+                })
+            });
+            if (res.ok) {
+                mutate(); // Refresh
+                alert('Bot Configuration Saved Successfully!');
+            } else {
+                alert('Failed to save configuration');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error saving configuration');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const removeFlowStep = (id: number) => {
         setCustomFlow(customFlow.filter(step => step.id !== id));
     };
+
+    const addFlowStep = () => {
+        const newStep = {
+            id: Date.now(),
+            type: 'Response',
+            text: 'New response step...',
+            trigger: 'Keyword'
+        };
+        setCustomFlow([...customFlow, newStep]);
+    };
+
+    if (!data && !error) return <div style={{ padding: '40px', textAlign: 'center' }}>Loading Configuration...</div>;
 
     return (
         <div className="animate-in">
@@ -54,14 +105,51 @@ export default function BotConfig() {
                 {/* Left Column: Flow Builder */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 
+                    {/* System Prompt Section */}
+                    <div className="card">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <div className="stat-icon" style={{ background: 'var(--accent-purple)' }}><Bot size={20} color="white" /></div>
+                            <h3 style={{ fontSize: '1.1rem' }}>AI Personality (System Prompt)</h3>
+                        </div>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                            Define how the AI should behave when Hardcoded Flows end.
+                        </p>
+                        <textarea
+                            className="search-box"
+                            style={{ width: '100%', height: '100px', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '12px', resize: 'vertical' }}
+                            value={systemPrompt}
+                            onChange={(e) => setSystemPrompt(e.target.value)}
+                            placeholder="You are a helpful assistant for..."
+                        />
+                    </div>
+
+                    {/* Website Knowledge Base Section */}
+                    <div className="card">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+                            <div className="stat-icon" style={{ background: 'var(--accent-orange)' }}><Globe size={20} color="white" /></div>
+                            <h3 style={{ fontSize: '1.1rem' }}>Website Knowledge Base</h3>
+                        </div>
+                        <p style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                            Enter your website URL (e.g., https://example.com). The bot will read it to answer questions.
+                        </p>
+                        <input
+                            type="text"
+                            className="search-box"
+                            style={{ width: '100%', background: 'rgba(0,0,0,0.2)', color: 'white', border: '1px solid var(--border-glass)', padding: '12px', borderRadius: '12px' }}
+                            value={websiteUrl}
+                            onChange={(e) => setWebsiteUrl(e.target.value)}
+                            placeholder="https://your-business-website.com"
+                        />
+                    </div>
+
                     {/* Booking Flow Sequence */}
                     <div className="card">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                 <div className="stat-icon" style={{ background: 'var(--accent-blue)' }}><Play size={20} color="white" /></div>
-                                <h3 style={{ fontSize: '1.1rem' }}>Booking Flow Sequence</h3>
+                                <h3 style={{ fontSize: '1.1rem' }}>Flow Sequence (Hardcoded)</h3>
                             </div>
-                            <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}><Plus size={14} /> ADD STEP</button>
+                            <button className="btn btn-secondary" onClick={addFlowStep} style={{ padding: '6px 12px', fontSize: '0.75rem' }}><Plus size={14} /> ADD STEP</button>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
@@ -136,13 +224,13 @@ export default function BotConfig() {
                             <h3 style={{ fontSize: '1.1rem' }}>Bot Preview</h3>
                         </div>
                         <div style={{ flex: 1, background: 'rgba(0,0,0,0.2)', borderRadius: '16px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                            {customFlow.slice(0, 2).map((s, i) => (
+                            {customFlow.slice(0, 3).map((s, i) => (
                                 <React.Fragment key={i}>
                                     <div style={{ background: 'var(--accent-blue)', color: 'white', padding: '10px 14px', borderRadius: '12px 12px 12px 0', fontSize: '0.8rem', maxWidth: '80%', alignSelf: 'flex-start' }}>
                                         {s.text}
                                     </div>
-                                    {i === 0 && <div style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '10px 14px', borderRadius: '12px 12px 0 12px', fontSize: '0.8rem', maxWidth: '80%', alignSelf: 'flex-end', border: '1px solid var(--border-glass)' }}>
-                                        Walaikumsalam!
+                                    {i % 2 === 0 && <div style={{ background: 'rgba(255,255,255,0.05)', color: 'white', padding: '10px 14px', borderRadius: '12px 12px 0 12px', fontSize: '0.8rem', maxWidth: '80%', alignSelf: 'flex-end', border: '1px solid var(--border-glass)' }}>
+                                        [User Reply...]
                                     </div>}
                                 </React.Fragment>
                             ))}
