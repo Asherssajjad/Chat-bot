@@ -143,8 +143,8 @@ export default function BotSimulator() {
                             onChange={(e) => { setSelectedNiche(e.target.value); resetChat(); }}
                             style={{ background: 'var(--bg-main)', border: '1px solid var(--border-glass)', color: 'white', padding: '8px 12px', borderRadius: '8px', fontSize: '0.8rem', cursor: 'pointer' }}
                         >
-                            {Object.values(NICHE_FLOWS).map(flow => (
-                                <option key={flow.id} value={flow.id}>{flow.name}</option>
+                            {Object.entries(NICHE_FLOWS).map(([key, flow]) => (
+                                <option key={key} value={key}>{flow.name}</option>
                             ))}
                         </select>
                         <button className="btn btn-secondary" style={{ padding: '8px' }} onClick={resetChat}>

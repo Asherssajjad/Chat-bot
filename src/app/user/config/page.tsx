@@ -236,7 +236,7 @@ export default function BotConfig() {
                             ))}
                         </div>
                         <div style={{ marginTop: '16px', fontSize: '0.7rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                            <Activity size={12} className="pulse" /> Bot is ready to serve
+                            <Smartphone size={12} className="pulse" /> Bot is ready to serve
                         </div>
                     </div>
 
@@ -259,7 +259,4 @@ export default function BotConfig() {
             </div>
         </div>
     );
-}
-function Activity({ size, className }: { size: number, className: string }) {
-    return <Smartphone size={size} className={className} />;
 }

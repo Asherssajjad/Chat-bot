@@ -1,6 +1,6 @@
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 generator client {
@@ -19,37 +19,36 @@ enum LeadStatus {
   CONVERTED
 }
 
+enum ClientStatus {
+  ACTIVE
+  PAUSED
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  password      String?
-  role          Role      @default(USER)
-  image         String?
-  
-  // WhatsApp Business Config (Admin Managed)
-  phoneId       String?
-  wabaId        String?
-  accessToken   String?
-  webhookSecret String?
-  messageLimit  Int       @default(1000)
-  autoPause     Boolean   @default(false)
-  
-  // Bot Configs
-  niche         String    @default("LEAD_REPLY_AGENT")
-  claudeKey     String?
-  whatsappPhone String?
-  systemPrompt  String?   @default("You are a helpful assistant.")
-  customFlow    String?   // JSON string of custom flow steps
-  websiteUrl    String?   // New: Website to scrape for knowledge base
-  websiteContent String?  // Cached text content from the website
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String?
+  role      Role     @default(USER)
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-
-  // Relationships
-  leads         Lead[]
-  chatLogs      ChatLog[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+model Client {
+  id             String       @id @default(cuid())
+  businessName   String?
+  phoneNumberId  String       @unique
+  accessToken    String?
+  niche          String       @default("LEAD_REPLY_AGENT")
+  websiteContent String?
+  systemPrompt   String?
+  messageLimit   Int          @default(1000)
+  status         ClientStatus @default(ACTIVE)
+  leads          Lead[]
+  chatLogs       ChatLog[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Lead {
@@ -59,26 +58,31 @@ model Lead {
   status      LeadStatus @default(COLD)
   interest    String?
   location    String?
-  userId      String
-  user        User       @relation(fields: [userId], references: [id])
+  clientId    String
+  client      Client     @relation(fields: [clientId], references: [id])
   chatLogs    ChatLog[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 
-  @@index([userId])
+  @@index([clientId])
 }
 
 model ChatLog {
   id        String   @id @default(cuid())
-  sender    String   // 'BOT' or 'USER'
+  sender    String
   message   String
-  type      String   // 'FLOW' or 'AI'
+  type      String
   leadId    String
   lead      Lead     @relation(fields: [leadId], references: [id])
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id])
   createdAt DateTime @default(now())
 
   @@index([leadId])
-  @@index([userId])
+  @@index([clientId])
+}
+
+model ProcessedWebhookMessage {
+  id        String   @id
+  createdAt DateTime @default(now())
 }
