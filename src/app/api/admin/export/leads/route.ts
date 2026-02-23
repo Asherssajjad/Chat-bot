@@ -1,73 +1,58 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-function escapeCsvCell(value: string): string {
-    if (value.includes('"') || value.includes(',') || value.includes('\n') || value.includes('\r')) {
-        return `"${value.replace(/"/g, '""')}"`;
-    }
-    return value;
-}
-
-function formatDate(d: Date): string {
-    return d.toISOString().replace('T', ' ').slice(0, 19);
-}
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
     try {
-        const clientId = req.nextUrl.searchParams.get('clientId');
-        if (!clientId || !clientId.trim()) {
-            return NextResponse.json(
-                { error: 'clientId is required' },
-                { status: 400 }
-            );
+        // Enforce Admin Access
+        const session = await getServerSession(authOptions);
+        if (!session || (session.user as any).role !== 'ADMIN') {
+            return new NextResponse('Unauthorized', { status: 401 });
         }
 
-        const client = await prisma.client.findUnique({
-            where: { id: clientId.trim() },
-            select: { id: true, businessName: true },
-        });
-        if (!client) {
-            return NextResponse.json(
-                { error: 'Client not found' },
-                { status: 404 }
-            );
+        const searchParams = req.nextUrl.searchParams;
+        const clientId = searchParams.get('clientId');
+
+        if (!clientId) {
+            return new NextResponse('Missing clientId parameter', { status: 400 });
         }
 
+        // Fetch leads for the given client
         const leads = await prisma.lead.findMany({
-            where: { clientId: clientId.trim() },
+            where: { clientId },
             orderBy: { updatedAt: 'desc' },
             select: {
                 phone: true,
-                name: true,
                 status: true,
-                interest: true,
                 updatedAt: true,
             },
         });
 
-        const headers = ['phone', 'name', 'status', 'interest', 'lastInteractionAt'];
-        const rows = leads.map((lead) => [
-            escapeCsvCell(lead.phone),
-            escapeCsvCell(lead.name ?? ''),
-            escapeCsvCell(lead.status),
-            escapeCsvCell(lead.interest ?? ''),
-            escapeCsvCell(formatDate(lead.updatedAt)),
+        // Construct CSV without external libraries
+        const headers = ['Phone', 'Status', 'Last Interaction'];
+        const rows = leads.map(lead => [
+            lead.phone,
+            lead.status,
+            // Convert to a readable date (ISO or locale string)
+            lead.updatedAt.toISOString(),
         ]);
-        const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\r\n');
 
-        const filename = `leads-${(client.businessName || client.id).replace(/[^a-zA-Z0-9-_]/g, '-')}.csv`;
-        return new NextResponse(csv, {
+        const csvContent = [
+            headers.join(','),
+            ...rows.map(row => row.join(',')),
+        ].join('\n');
+
+        // Return as a downloadable CSV file
+        return new NextResponse(csvContent, {
             status: 200,
             headers: {
-                'Content-Type': 'text/csv; charset=utf-8',
-                'Content-Disposition': `attachment; filename="${filename}"`,
+                'Content-Type': 'text/csv',
+                'Content-Disposition': `attachment; filename="leads_export_${clientId}.csv"`,
             },
         });
     } catch (error) {
-        console.error('[admin/export/leads]', error);
-        return NextResponse.json(
-            { error: 'Failed to export leads' },
-            { status: 500 }
-        );
+        console.error('[EXPORT_LEADS]', error);
+        return new NextResponse('Internal Server Error', { status: 500 });
     }
 }

@@ -51,6 +51,8 @@ export async function runBotPipeline({
     incomingMessage,
 }: PipelineInput): Promise<PipelineOutput> {
     const text = incomingMessage.trim();
+
+    // Safety check for empty messages
     if (!text) {
         const fallback = NICHE_FLOWS[client.niche] || NICHE_FLOWS['LEAD_REPLY_AGENT'];
         return {
@@ -67,7 +69,7 @@ export async function runBotPipeline({
 
     const isFirstResponse = botMessageCount === 0;
 
-    // First response must be conversion menu
+    // First response must be a conversion menu
     if (isFirstResponse) {
         const flow = NICHE_FLOWS[client.niche] || NICHE_FLOWS['LEAD_REPLY_AGENT'];
         const menu = flow.initialMessage;
@@ -89,20 +91,22 @@ export async function runBotPipeline({
         client.websiteContent ?? undefined
     );
 
-    // AI max 3 times per lead: if at limit and result is AI, force menu fallback
+    // AI can be used max 3 times per lead
     if (result.source === 'AI' && aiCount >= MAX_AI_PER_LEAD) {
         result = {
-            text: "Got it. Reply with a number (1-5) to get back on track 👋",
+            text: "Got it. " + DEFAULT_CTA.trim(),
             source: 'FLOW',
             tag: 'COLD',
         };
     }
 
+    // Tag lead as HOT / WARM / COLD
     const tag = (result.tag?.toUpperCase() === 'HOT' || result.tag?.toUpperCase() === 'WARM' || result.tag?.toUpperCase() === 'COLD'
         ? result.tag?.toUpperCase()
         : 'COLD') as 'HOT' | 'WARM' | 'COLD';
 
     return {
+        // Every reply must contain CTA and be short (WhatsApp style)
         text: normalizeReply(result.text),
         tag,
         source: result.source,

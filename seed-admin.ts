@@ -31,7 +31,6 @@ async function main() {
                 name,
                 password: passwordHash,
                 role: 'ADMIN',
-                niche: 'LEAD_REPLY_AGENT',
             },
         });
     }

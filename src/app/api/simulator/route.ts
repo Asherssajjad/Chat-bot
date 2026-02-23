@@ -6,46 +6,33 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
     try {
-        // In a real app, we use the session user. For simulator, we might want the logged in user too.
-        const session = await getServerSession(authOptions);
-        const { message, niche, type } = await req.json();
+        const { message, niche, type, clientId } = await req.json();
 
-        let customFlow = [];
         let systemPrompt = undefined;
-        let websiteContent = undefined; // Fixed duplicates
+        let websiteContent = undefined;
 
-        if (session && session.user && session.user.email) {
-            const user = await prisma.user.findUnique({
-                where: { email: session.user.email }
-            });
-            if (user) {
-                if (user.customFlow) customFlow = JSON.parse(user.customFlow);
-                if (user.systemPrompt) systemPrompt = user.systemPrompt;
-                if (user.websiteContent) websiteContent = user.websiteContent;
-            }
+        const client = clientId
+            ? await prisma.client.findUnique({ where: { id: clientId } })
+            : await prisma.client.findFirst();
+
+        if (client) {
+            if (client.systemPrompt) systemPrompt = client.systemPrompt;
+            if (client.websiteContent) websiteContent = client.websiteContent;
         }
 
-        // Use the shared bot logic with DYNAMIC config
         const response = await processUserMessage(
-            'simulator_user',
+            client?.id || 'simulator_user',
             message,
             type || 'text',
-            niche || 'LEAD_REPLY_AGENT',
-            customFlow,
+            niche || client?.niche || 'LEAD_REPLY_AGENT',
+            undefined, // No custom flows
             systemPrompt,
-            websiteContent // Pass CONTENT not URL
+            websiteContent
         );
 
-        return NextResponse.json({
-            success: true,
-            botResponse: response
-        });
-
+        return NextResponse.json({ success: true, botResponse: response });
     } catch (error) {
         console.error("Simulator Error:", error);
-        return NextResponse.json(
-            { success: false, error: 'Failed to process message' },
-            { status: 500 }
-        );
+        return NextResponse.json({ success: false, error: 'Failed to process' }, { status: 500 });
     }
 }

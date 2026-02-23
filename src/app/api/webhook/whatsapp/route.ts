@@ -2,23 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { processUserMessage } from '@/lib/bot-engine';
 
-// 1. GET verification: hub.verify_token vs WHATSAPP_VERIFY_TOKEN, return hub.challenge
 export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const mode = searchParams.get('hub.mode');
     const token = searchParams.get('hub.verify_token');
     const challenge = searchParams.get('hub.challenge');
 
-    if (mode && token && challenge) {
-        if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
-            return new NextResponse(challenge, { status: 200 });
-        }
-        return new NextResponse('Forbidden', { status: 403 });
+    if (mode === 'subscribe' && token === process.env.WHATSAPP_VERIFY_TOKEN) {
+        return new NextResponse(challenge, { status: 200 });
     }
-    return new NextResponse('Bad Request', { status: 400 });
+
+    return new NextResponse('Forbidden', { status: 403 });
 }
 
-// 2–8. POST: parse payload → resolve client → dedupe → lead → bot → chat → reply
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
@@ -41,87 +37,77 @@ export async function POST(req: NextRequest) {
         for (const msg of messages) {
             const messageId = msg.id;
             const senderPhone = String(msg.from);
-            const msgType = msg.type;
-            const textBody = msgType === 'text' ? msg.text?.body?.trim() : null;
 
-            // 2. Ignore non-text messages
-            if (msgType !== 'text' || !textBody) {
+            // 2. Ignore non-text messages for now
+            if (msg.type !== 'text' || !msg.text?.body) {
                 continue;
             }
+            const textBody = msg.text.body.trim();
 
-            // 4. Prevent duplicates: if message_id already processed, exit
+            // 4. Prevent duplicates
             const alreadyProcessed = await prisma.processedWebhookMessage.findUnique({
                 where: { id: messageId },
             });
-            if (alreadyProcessed) {
-                return new NextResponse(null, { status: 200 });
-            }
+            if (alreadyProcessed) continue;
 
-            // 3. Resolve client: find by phoneNumberId; if not found, return 200 OK
-            const client = await prisma.user.findFirst({
-                where: { phoneId: phoneNumberId },
+            // 3. Resolve Client
+            const client = await prisma.client.findUnique({
+                where: { phoneNumberId: phoneNumberId },
             });
             if (!client) {
                 return new NextResponse(null, { status: 200 });
             }
 
-            // 5. Lead: find or create by phone + clientId; update lastInteractionAt (updatedAt)
+            // 5. Lead handling
             let lead = await prisma.lead.findFirst({
-                where: { userId: client.id, phone: senderPhone },
+                where: { clientId: client.id, phone: senderPhone },
             });
+
             if (!lead) {
-                const contactName = value.contacts?.find((c: { wa_id: string }) => c.wa_id === senderPhone)?.profile?.name;
+                const contactName = value.contacts?.find((c: any) => c.wa_id === senderPhone)?.profile?.name;
                 lead = await prisma.lead.create({
                     data: {
-                        userId: client.id,
+                        clientId: client.id,
                         phone: senderPhone,
                         name: contactName || null,
                         status: 'COLD',
                     },
                 });
+            } else {
+                lead = await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { updatedAt: new Date() },
+                });
             }
-            await prisma.lead.update({
-                where: { id: lead.id },
-                data: { updatedAt: new Date() },
-            });
 
-            // 6. Bot logic: menu → hardcoded flow → website KB → AI fallback (existing processUserMessage)
-            const customFlow = client.customFlow ? JSON.parse(client.customFlow) : [];
-            const niche = client.niche || 'LEAD_REPLY_AGENT';
+            // 6. Bot logic
             const botResponse = await processUserMessage(
                 client.id,
                 textBody,
                 'text',
-                niche,
-                customFlow,
+                client.niche,
+                undefined, // Custom flows removed from Client requirements
                 client.systemPrompt ?? undefined,
                 client.websiteContent ?? undefined
             );
 
             const tag = botResponse.tag?.toUpperCase();
-            const leadStatus = tag === 'HOT' || tag === 'WARM' || tag === 'COLD' ? tag : null;
-            if (leadStatus) {
+            if (tag === 'HOT' || tag === 'WARM' || tag === 'COLD') {
                 await prisma.lead.update({
                     where: { id: lead.id },
-                    data: { status: leadStatus, updatedAt: new Date() },
+                    data: { status: tag },
                 });
             }
 
-            // 7. Save ChatLog: USER message, then BOT reply
+            // 7. Save ChatLog
             await prisma.chatLog.createMany({
                 data: [
-                    { leadId: lead.id, userId: client.id, sender: 'USER', message: textBody, type: 'USER' },
-                    {
-                        leadId: lead.id,
-                        userId: client.id,
-                        sender: 'BOT',
-                        message: botResponse.text,
-                        type: botResponse.source,
-                    },
+                    { leadId: lead.id, clientId: client.id, sender: 'USER', message: textBody, type: 'USER' },
+                    { leadId: lead.id, clientId: client.id, sender: 'BOT', message: botResponse.text, type: botResponse.source },
                 ],
             });
 
-            // 8. Send reply via WhatsApp Graph API using client's accessToken
+            // 8. Send reply
             const accessToken = client.accessToken || process.env.WHATSAPP_TOKEN;
             if (accessToken) {
                 await fetch(`https://graph.facebook.com/v18.0/${phoneNumberId}/messages`, {
@@ -151,3 +137,4 @@ export async function POST(req: NextRequest) {
         return new NextResponse(null, { status: 200 });
     }
 }
+
