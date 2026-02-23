@@ -22,11 +22,8 @@ const Sidebar = () => {
     const adminMenu = [
         { name: 'Dashboard', icon: Home, path: '/admin' },
         { name: 'Clients', icon: Users, path: '/admin/users' },
-        { name: 'My Leads', icon: BarChart2, path: '/admin/leads' },
-        { name: 'History', icon: MessageCircle, path: '/admin/history' },
-        { name: 'Niche Flows', icon: Zap, path: '/admin/flows' },
-        { name: 'Bot Simulator', icon: Terminal, path: '/admin/simulator' },
-        { name: 'WhatsApp API Test', icon: Phone, path: '/whatsapp-test' },
+        { name: 'Leads', icon: BarChart2, path: '/admin/leads' },
+        { name: 'Chat History', icon: MessageCircle, path: '/admin/history' },
         { name: 'Bot Settings', icon: Settings, path: '/admin/settings' },
     ];
 
