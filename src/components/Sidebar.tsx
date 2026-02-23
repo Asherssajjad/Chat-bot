@@ -7,47 +7,28 @@ import { signOut } from 'next-auth/react';
 import {
     Home,
     BarChart2,
-    CreditCard,
+    Users,
     Settings,
-    User,
     LogOut,
     Zap,
-    Layout,
     MessageCircle,
     Terminal,
-    Database,
     Phone
 } from 'lucide-react';
 
-const Sidebar = ({ isAdmin = false }) => {
+const Sidebar = () => {
     const pathname = usePathname();
 
     const adminMenu = [
         { name: 'Dashboard', icon: Home, path: '/admin' },
-        { name: 'Users', icon: User, path: '/admin/users' },
-        { name: 'Packages', icon: CreditCard, path: '/admin/packages' },
+        { name: 'Clients', icon: Users, path: '/admin/users' },
+        { name: 'My Leads', icon: BarChart2, path: '/admin/leads' },
+        { name: 'History', icon: MessageCircle, path: '/admin/history' },
         { name: 'Niche Flows', icon: Zap, path: '/admin/flows' },
-        { name: 'Analytics', icon: BarChart2, path: '/admin/analytics' },
         { name: 'Bot Simulator', icon: Terminal, path: '/admin/simulator' },
-        { name: 'Scrape Test', icon: Database, path: '/scrape-test' },
         { name: 'WhatsApp API Test', icon: Phone, path: '/whatsapp-test' },
-        { name: 'Settings', icon: Settings, path: '/admin/settings' },
+        { name: 'Bot Settings', icon: Settings, path: '/admin/settings' },
     ];
-
-    const userMenu = [
-        { name: 'Dashboard', icon: Home, path: '/user' },
-        { name: 'My Leads', icon: User, path: '/user/leads' },
-        { name: 'Bot Config', icon: Layout, path: '/user/config' },
-        { name: 'Packages', icon: CreditCard, path: '/user/packages' },
-        { name: 'History', icon: MessageCircle, path: '/user/history' },
-        { name: 'Reports', icon: BarChart2, path: '/user/reports' },
-        { name: 'Scrape Test', icon: Database, path: '/scrape-test' },
-        { name: 'WhatsApp API Test', icon: Phone, path: '/whatsapp-test' },
-        { name: 'Settings', icon: Settings, path: '/user/settings' },
-    ];
-
-
-    const menuItems = isAdmin ? adminMenu : userMenu;
 
     return (
         <div className="sidebar">
@@ -77,7 +58,7 @@ const Sidebar = ({ isAdmin = false }) => {
             </div>
 
             <nav style={{ flex: 1 }}>
-                {menuItems.map((item) => (
+                {adminMenu.map((item) => (
                     <Link
                         key={item.name}
                         href={item.path}

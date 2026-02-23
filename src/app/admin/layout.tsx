@@ -7,7 +7,7 @@ export default function AdminLayout({
 }) {
     return (
         <div className="dashboard-container">
-            <Sidebar isAdmin={true} />
+            <Sidebar />
             <main className="main-content">
                 <div className="header-nav">
                     <div className="breadcrumb">
