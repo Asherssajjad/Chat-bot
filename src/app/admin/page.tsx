@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import useSWR from 'swr';
 import {
     BarChart,
     Bar,
@@ -17,36 +18,38 @@ import {
     Globe,
     Zap,
     Users,
-    MoreVertical,
     Activity,
     Cpu,
     ShieldAlert,
     Server,
     Terminal,
-    ArrowUpRight
+    ArrowUpRight,
+    Loader2
 } from 'lucide-react';
 
-const messageVolumeData = [
-    { name: '00:00', val: 400 }, { name: '04:00', val: 300 }, { name: '08:00', val: 900 },
-    { name: '12:00', val: 1200 }, { name: '16:00', val: 1500 }, { name: '20:00', val: 1100 },
-    { name: '23:59', val: 800 },
-];
-
-const resourceData = [
-    { name: 'Core 1', v: 45 }, { name: 'Core 2', v: 38 }, { name: 'Core 3', v: 52 },
-    { name: 'Core 4', v: 30 }, { name: 'Core 5', v: 48 }, { name: 'Core 6', v: 35 },
-];
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 const AdminDashboard = () => {
+    const { data: stats, error: statsError } = useSWR('/api/stats', fetcher, { refreshInterval: 5000 });
+    const { data: history, error: historyError } = useSWR('/api/admin/history', fetcher, { refreshInterval: 3000 });
+
+    const messageVolumeData = [
+        { name: '00:00', val: 0 }, { name: '04:00', val: 0 }, { name: '08:00', val: 0 },
+        { name: '12:00', val: stats?.total || 0 }, { name: '16:00', val: stats?.total || 0 }, { name: '20:00', val: stats?.total || 0 },
+        { name: '23:59', val: stats?.total || 0 },
+    ];
+
+    const logs = history?.logs || [];
+
     return (
         <div className="animate-in">
             {/* Real-time System Overview Stat Cards */}
             <div className="grid-container" style={{ gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
                 {[
-                    { label: "Global Messages", value: "842,000", trend: "+12.5%", icon: MessageSquare, color: 'var(--accent-blue)' },
-                    { label: "AI API Savings", value: "$4,250", trend: "+24%", icon: Zap, color: 'var(--accent-cyan)' },
-                    { label: "Active Bots", value: "1,284", trend: "+8.2%", icon: Cpu, color: 'var(--accent-purple)' },
-                    { label: "Total Leads", value: "48,290", trend: "+15%", icon: Users, color: '#f59e0b' },
+                    { label: "Total Leads", value: stats?.total || 0, trend: "+100%", icon: Users, color: '#f59e0b' },
+                    { label: "Hot Leads", value: stats?.hot || 0, trend: "Target", icon: Zap, color: 'var(--accent-cyan)' },
+                    { label: "Active Nodes", value: "1", trend: "Live", icon: Cpu, color: 'var(--accent-purple)' },
+                    { label: "Efficiency", value: `${stats?.efficiency || 0}%`, trend: "AI Optimized", icon: MessageSquare, color: 'var(--accent-blue)' },
                 ].map((stat, i) => (
                     <div key={i} className="card stat-card" style={{ padding: '20px' }}>
                         <div className="stat-info">
@@ -85,7 +88,7 @@ const AdminDashboard = () => {
                         </div>
                         <h2 style={{ fontSize: '2.5rem', fontWeight: 800, marginBottom: '12px' }}>Platform Infrastructure</h2>
                         <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', maxWidth: '400px', lineHeight: '1.6' }}>
-                            All clusters are healthy. You are currently saving **92%** on Claude API costs through optimized hardcoded flows.
+                            Your AI Engine is connected. Handling <b>{stats?.total || 0}</b> active lead relationships with <b>{stats?.hot || 0}</b> high-intent conversions.
                         </p>
                     </div>
 
@@ -93,8 +96,8 @@ const AdminDashboard = () => {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                             <div className="icon-box" style={{ background: 'rgba(255,255,255,0.05)' }}><Server size={18} color="var(--accent-blue)" /></div>
                             <div>
-                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>CPU USAGE</div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>24.2%</div>
+                                <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>SERVER STATUS</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>ONLINE</div>
                             </div>
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -108,46 +111,43 @@ const AdminDashboard = () => {
                             <div className="icon-box" style={{ background: 'rgba(255,255,255,0.05)' }}><ShieldAlert size={18} color="#f59e0b" /></div>
                             <div>
                                 <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)' }}>INCIDENTS</div>
-                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>0 Active</div>
+                                <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>{statsError || historyError ? '1 Issue' : '0 Active'}</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Quick Actions & Live Stream */}
+                {/* Real Live Stream */}
                 <div className="card" style={{ display: 'flex', flexDirection: 'column', padding: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                         <h4 style={{ fontSize: '0.9rem' }}>Live Event Stream</h4>
-                        <Terminal size={14} color="var(--text-secondary)" />
+                        {!history && <Loader2 size={14} className="animate-spin" color="var(--text-secondary)" />}
                     </div>
-                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem', fontFamily: 'monospace' }}>
-                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-cyan)', background: 'rgba(1, 255, 140, 0.05)' }}>
-                            <span style={{ color: 'var(--accent-cyan)' }}>[14:02:11]</span> Lead detected: Bareerah Rentals
-                        </div>
-                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-blue)', background: 'rgba(0, 117, 255, 0.05)' }}>
-                            <span style={{ color: 'var(--accent-blue)' }}>[14:02:05]</span> Webhook processed: +971...
-                        </div>
-                        <div style={{ padding: '8px', borderLeft: '2px solid var(--accent-purple)', background: 'rgba(139, 92, 246, 0.05)' }}>
-                            <span style={{ color: 'var(--accent-purple)' }}>[14:01:48]</span> AI Fallback engaged for UID_092
-                        </div>
-                        <div style={{ padding: '8px', borderLeft: '2px solid rgba(255,255,255,0.1)' }}>
-                            <span style={{ color: 'var(--text-secondary)' }}>[14:01:30]</span> New user registered (Dubai Stay)
-                        </div>
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '0.75rem', fontFamily: 'monospace', overflowY: 'auto', maxHeight: '250px' }}>
+                        {logs.length === 0 ? (
+                            <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '40px' }}>Waiting for first webhook event...</div>
+                        ) : (
+                            logs.slice(0, 5).map((log: any, i: number) => (
+                                <div key={i} style={{ padding: '8px', borderLeft: `2px solid ${log.tag === 'HOT' ? 'var(--accent-cyan)' : 'var(--accent-blue)'}`, background: 'rgba(255, 255, 255, 0.02)' }}>
+                                    <span style={{ color: 'var(--text-secondary)', marginRight: '8px' }}>[{new Date(log.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}]</span>
+                                    <span style={{ color: 'var(--accent-cyan)' }}>{log.name}</span>: {log.lastMessage.substring(0, 30)}...
+                                </div>
+                            ))
+                        )}
                     </div>
-                    <button className="btn btn-primary" style={{ width: '100%', marginTop: '20px', fontSize: '0.75rem' }}>OPEN FULL LOGS</button>
+                    <button className="btn btn-primary" style={{ width: '100%', marginTop: '20px', fontSize: '0.75rem' }} onClick={() => window.location.href = '/admin/history'}>VIEW ALL CHATS</button>
                 </div>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '16px' }}>
 
-                {/* Global Traffic Chart */}
+                {/* Global Traffic Chart - Connected to Real Data */}
                 <div className="card" style={{ padding: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                         <div>
-                            <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Global Message Volume</h4>
-                            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Real-time traffic across all connected WhatsApp nodes</p>
+                            <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Traffic Velocity</h4>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Lead generation activity over time</p>
                         </div>
-                        <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.65rem' }}>VIEW NODES <ArrowUpRight size={12} /></button>
                     </div>
                     <div style={{ height: '300px' }}>
                         <ResponsiveContainer width="100%" height="100%">
@@ -168,27 +168,33 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Load Balance / Cluster Health */}
+                {/* Database Connectivity Health */}
                 <div className="card" style={{ padding: '24px' }}>
-                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Cluster Node Distribution</h4>
-                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>CPU Load balancing per active bot-processing core</p>
+                    <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>Lead Status Distribution</h4>
+                    <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '24px' }}>Sentiment breakdown of real captured leads</p>
 
                     <div style={{ height: '220px', marginBottom: '24px' }}>
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={resourceData}>
-                                <Bar dataKey="v" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]} barSize={12} />
+                            <BarChart data={[
+                                { name: 'Hot', v: stats?.hot || 0 },
+                                { name: 'Warm', v: stats?.warm || 0 },
+                                { name: 'Cold', v: stats?.cold || 0 },
+                            ]}>
+                                <Bar dataKey="v" fill="var(--accent-cyan)" radius={[4, 4, 0, 0]} barSize={40} />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                         <div className="glass-card" style={{ padding: '12px', borderRadius: '12px' }}>
-                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>API LATENCY</div>
-                            <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>184ms</div>
+                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>DB CONNECTION</div>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 800, color: statsError ? '#ff3b3b' : 'var(--accent-cyan)' }}>
+                                {statsError ? 'ERROR' : 'HEALTHY'}
+                            </div>
                         </div>
                         <div className="glass-card" style={{ padding: '12px', borderRadius: '12px' }}>
-                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>QUEUE SIZE</div>
-                            <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>12 Active</div>
+                            <div style={{ fontSize: '0.6rem', color: 'var(--text-secondary)', marginBottom: '4px' }}>LAST UPDATE</div>
+                            <div style={{ fontSize: '0.9rem', fontWeight: 800 }}>LIVE</div>
                         </div>
                     </div>
                 </div>
